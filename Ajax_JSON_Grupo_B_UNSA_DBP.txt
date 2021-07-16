@@ -1,0 +1,18 @@
+Para trabajar con Ajax debemostrabajar de la siguiente forma:
+
+$.ajax({
+    type: "GET",
+    url: "http://query.yahooapis.com/v1/public/yql?q=SELECT%20title%2C%20description%2C%20link%2C%20pubDate%0AFROM%20feed(0%2C5)%0AWHERE%20url%3D'http%3A%2F%2Ffeeds.feedburner.com%2FffAggregator'&format=json&diagnostics=true&callback=friendFeed",
+    data: { get_param: 'value' },
+    jsonpCallback: 'friendFeed',
+    dataType: "jsonp",
+    success: function (data) {
+        var obj = data.query.results.entry,  // get entry object (array) from JSON data
+            ul = $("<ul>");                    // create a new ul element
+        // iterate over the array and build the list
+        for (var i = 0, l = obj.length; i < l; ++i) {
+            ul.append("<li><a href='" + obj[i].link.href + "'>" + obj[i].title.content + "</a></li>");
+        }
+        $("#results").append(ul);    // add the list to the DOM
+    }
+});

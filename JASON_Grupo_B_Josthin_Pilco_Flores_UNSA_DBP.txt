@@ -1,0 +1,72 @@
+Para trabajar con respuestas tipo JASON podríamos tomar en cuenta los siguientes códigos:
+
+function addNewManufacturer() {
+       var name = $("#id-manuf-name").val();
+       var address = $("#id-manuf-address").val();
+       var phone = $("#id-manuf-phone").val();
+
+       var sendInfo = {
+           Name: name,
+           Address: address,
+           Phone: phone
+       };
+
+       $.ajax({
+           type: "POST",
+           url: "/Home/Add",
+           dataType: "json",
+           success: function (msg) {
+               if (msg) {
+                   alert("Somebody" + name + " was added in list !");
+                   location.reload(true);
+               } else {
+                   alert("Cannot add to list !");
+               }
+           },
+
+           data: sendInfo
+       });
+}
+
+
+[HttpPost]
+public ActionResult Add(PersonSheets sendInfo) {
+    bool success = _addSomethingInList.AddNewSomething( sendInfo );
+
+    return this.Json( new {
+         msg = success
+    });
+
+}
+
+public struct PersonSheets
+{
+    public int Id;
+    public string Name;
+    public string Address;
+    public string Phone;
+}
+
+public class PersonModel
+{
+    private List<PersonSheets> _list;
+    public PersonModel() {
+         _list= GetFakeData();
+    }
+
+    public bool AddNewSomething(PersonSheets info) {
+         if ( (info as object) == null ) {
+            throw new ArgumentException( "Person list cannot be empty", "info" );
+         }
+
+         PersonSheets item= new PersonSheets();
+         item.Id = GetMaximumIdValueFromList( _list) + 1;
+         item.Name = info.Name;
+         item.Address = info.Address;
+         item.Phone = info.Phone;
+
+         _list.Add(item);
+
+         return true;
+    }
+}
